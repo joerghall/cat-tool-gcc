@@ -30,19 +30,13 @@ else ()
     message(FATAL_ERROR "Unable to find buildtools, please check if the submodule is initialized")
 endif ()
 
-if(BUILD_WINDOWS)
-    add_artifact("python2" "https://h1grid.com/artifactory/cbt/devtools/python2/2.7.14.43.rcd588a99/python2-2.7.14.43.rcd588a99-windows.tgz" ${ARTIFACT_TOOLSETS_CACHE} "python2/2.7.14.43.rcd588a99/windows" "python2-2.7.14.43.rcd588a99-windows.tgz")
-#    add_artifact("ninja" "https://h1grid.com:443/artifactory/cbt/devtools/ninja/1.8.2/ninja-1.8.2-windows.tgz" ${ARTIFACT_TOOLSETS_CACHE} "ninja/1.8.2/windows" "ninja-1.8.2-windows.tgz")
-#    add_artifact("pigz" "https://h1grid.com:443/artifactory/cbt/devtools/pigz/2.3.1/pigz-2.3.1-windows.tgz" ${ARTIFACT_TOOLSETS_CACHE} "pigz/2.3.1/windows" "pigz-2.3.1-windows.tgz")
-elseif(BUILD_OSX)
-    add_artifact("python2" "https://h1grid.com/artifactory/cbt/devtools/python2/2.7.14.43.rcd588a99/python2-2.7.14.43.rcd588a99-osx.tgz" ${ARTIFACT_TOOLSETS_CACHE} "python2/2.7.14.43.rcd588a99/osx" "python2-2.7.14.43.rcd588a99-osx.tgz")
-#    add_artifact("ninja" "https://h1grid.com:443/artifactory/cbt/devtools/ninja/1.8.2/ninja-1.8.2-osx.tgz" ${ARTIFACT_TOOLSETS_CACHE} "ninja/1.8.2/osx" "ninja-1.8.2-osx.tgz")
-#    add_artifact("pigz" "https://h1grid.com:443/artifactory/cbt/devtools/pigz/2.3.4/pigz-2.3.4-osx.tgz" ${ARTIFACT_TOOLSETS_CACHE} "pigz/2.3.4/osx" "pigz-2.3.4-osx.tgz")
-elseif(BUILD_LINUX)
-    add_artifact("python2" "https://h1grid.com/artifactory/cbt/devtools/python2/2.7.14.43.rcd588a99/python2-2.7.14.43.rcd588a99-linux.tgz" ${ARTIFACT_TOOLSETS_CACHE} "python2/2.7.14.43.rcd588a99/linux" "python2-2.7.14.43.rcd588a99-linux.tgz")
-#    add_artifact("ninja" "https://h1grid.com:443/artifactory/cbt/devtools/ninja/1.8.2/ninja-1.8.2-linux.tgz" ${ARTIFACT_TOOLSETS_CACHE} "ninja/1.8.2/linux" "ninja-1.8.2-windows.tgz")
-#    add_artifact("pigz" "https://h1grid.com:443/artifactory/cbt/devtools/pigz/2.3.1/pigz-2.3.4-linux.tgz" ${ARTIFACT_TOOLSETS_CACHE} "pigz/2.3.4/linux" "pigz-2.3.4-windows.tgz")
-endif()
+set(default_ARTIFACT url=https://h1grid.com/artifactory/cbt/devtools/${PACKAGE}/${VERSION}/${PACKAGE}-${VERSION}-${PLATFORM}.{EXTENTION}
+                    version=1
+)
+
+add_toolset(python2 2.7.14.43.rcd588a99 config=default )
+add_toolset(ninja 1.8.2.11.rc3e3b700 config=default )
+# add_toolset(pigz 1.8.2.7.r8fe061a4 config=default OVERRIDE_VERSION_WINDOWS=2.3.1)
 
 include(python2)
 
@@ -81,50 +75,70 @@ list(LENGTH VERSION_DATA VERSION_REVISION)
 list(GET VERSION_DATA 0 VERSION_HASH)
 string(SUBSTRING ${VERSION_HASH} 0 8 VERSION_SHORTHASH)
 
-# Python specifics
-#
-set(NINJA_VERSION 1.8.2)
-set(NINJA_VERSION_PACKAGE ${NINJA_VERSION}.${VERSION_REVISION}.r${VERSION_SHORTHASH})
+## Package specifics
+##
+set(PACKAGE_VERSION 7.2.0)
+set(PACKAGE_NAME gcc7)
+set(PACKAGE_VERSION_PACKAGE ${PACKAGE_VERSION}.${VERSION_REVISION}.r${VERSION_SHORTHASH})
+set(PACKAGE_INSTALL_DIR ${SOURCE_SRC_DIR}/${PACKAGE_NAME}/${PACKAGE_VERSION_PACKAGE}/${BUILD_OS})
 
-MESSAGE(STATUS "Building package version ninja-${NINJA_VERSION_PACKAGE}.*.tgz")
-
-set(PYTHON_SOURCE_SOURCE_URL_WINDOWS https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-win.zip)
-set(PYTHON_SOURCE_SOURCE_URL_OSX https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-mac.zip)
-set(PYTHON_SOURCE_SOURCE_URL_LINUX https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip)
-set(PYTHON_SOURCE_TARGET_FILE_WINDOWS ${SOURCE_DOWNLOAD_DIR}/ninja-win.zip)
-set(PYTHON_SOURCE_TARGET_FILE_OSX ${SOURCE_DOWNLOAD_DIR}/ninja-mac.zip)
-set(PYTHON_SOURCE_TARGET_FILE_LINUX ${SOURCE_DOWNLOAD_DIR}/ninja-linux.zip)
-
-add_custom_target(download_ninja
+add_custom_target(download_source
     COMMAND ${CMAKE_COMMAND} -E make_directory ${SOURCE_DOWNLOAD_DIR}
-    COMMAND ${CMAKE_COMMAND} -DSOURCE=${PYTHON_SOURCE_SOURCE_URL_WINDOWS} -DTARGET=${PYTHON_SOURCE_TARGET_FILE_WINDOWS} -P ${download_COMMAND}
-    COMMAND ${CMAKE_COMMAND} -DSOURCE=${PYTHON_SOURCE_SOURCE_URL_OSX} -DTARGET=${PYTHON_SOURCE_TARGET_FILE_OSX} -P ${download_COMMAND}
-    COMMAND ${CMAKE_COMMAND} -DSOURCE=${PYTHON_SOURCE_SOURCE_URL_LINUX} -DTARGET=${PYTHON_SOURCE_TARGET_FILE_LINUX} -P ${download_COMMAND}
+    COMMAND svn export --force svn://gcc.gnu.org/svn/gcc/tags/gcc_7_2_0_release ${SOURCE_DOWNLOAD_DIR}/gcc
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-add_custom_target(unpack_ninja
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${SOURCE_SRC_DIR}/windows/ninja/${NINJA_VERSION}/windows
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${SOURCE_SRC_DIR}/linux/ninja/${NINJA_VERSION}/linux
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${SOURCE_SRC_DIR}/osx/ninja/${NINJA_VERSION}/osx
-    COMMAND python2 ${unzip_py_COMMAND} --file ${PYTHON_SOURCE_TARGET_FILE_WINDOWS} --target ${SOURCE_SRC_DIR}/windows/ninja/${NINJA_VERSION}/windows
-    COMMAND python2 ${unzip_py_COMMAND} --file ${PYTHON_SOURCE_TARGET_FILE_LINUX} --target ${SOURCE_SRC_DIR}/linux/ninja/${NINJA_VERSION}/linux
-    COMMAND python2 ${unzip_py_COMMAND} --file ${PYTHON_SOURCE_TARGET_FILE_OSX} --target ${SOURCE_SRC_DIR}/osx/ninja/${NINJA_VERSION}/osx
-    DEPENDS download_ninja
+add_custom_target(download_contrib
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${SOURCE_DOWNLOAD_DIR}
+    COMMAND bash contrib/download_prerequisites
+    WORKING_DIRECTORY ${SOURCE_DOWNLOAD_DIR}/gcc
+    DEPENDS download_source
 )
 
-add_custom_target(package_ninja
+add_custom_target(package_build
+    COMMAND ./configure
+            --build=x86_64-unknown-linux
+            --disable-libgcj
+            --disable-libunwind-exceptions
+            --enable-__cxa_atexit
+            --enable-bootstrap
+            --enable-checking=release
+            --enable-gnu-indirect-function
+            --enable-gnu-unique-object
+            --enable-initfini-array
+            --enable-languages=c,c++,objc,obj-c++,fortran,lto
+            --enable-libmpx
+            --enable-linker-build-id
+            --enable-lto
+            --enable-multilib
+            --enable-plugin
+            --enable-shared
+            --enable-threads=posix
+            --prefix=${PACKAGE_INSTALL_DIR}
+            --with-arch_32=i686
+            --with-bugurl=http://bugzilla.redhat.com/bugzilla
+            --with-default-libstdcxx-abi=gcc4-compatible
+            --with-isl
+            --with-linker-hash-style=gnu
+            --with-system-zlib
+            --with-tune=generic
+    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make
+    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make install
+    WORKING_DIRECTORY ${SOURCE_DOWNLOAD_DIR}/${PACKAGE_NAME}
+    DEPENDS download_contrib
+)
+#--with-gmp
+#--with-mpc
+#--with-mpfr
+
+add_custom_target(package_tar
     COMMAND ${CMAKE_COMMAND} -E make_directory ${SOURCE_UPLOAD_DIR}
-    COMMAND ${CMAKE_COMMAND} -E tar czf ${SOURCE_UPLOAD_DIR}/ninja-${NINJA_VERSION_PACKAGE}-windows.tgz windows/ninja
-    COMMAND ${CMAKE_COMMAND} -E tar czf ${SOURCE_UPLOAD_DIR}/ninja-${NINJA_VERSION_PACKAGE}-linux.tgz linux/ninja
-    COMMAND ${CMAKE_COMMAND} -E tar czf ${SOURCE_UPLOAD_DIR}/ninja-${NINJA_VERSION_PACKAGE}-osx.tgz osx/ninja
+    COMMAND ${CMAKE_COMMAND} -E tar czf ${SOURCE_UPLOAD_DIR}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-{BUILD_OS}.tgz ${PACKAGE_NAME}
     WORKING_DIRECTORY ${SOURCE_SRC_DIR}
-    DEPENDS unpack_ninja
+    DEPENDS package_build
 )
 
-add_custom_target(publish_ninja
-    COMMAND ${python2_BIN} ${upload_py_COMMAND} --file ${SOURCE_UPLOAD_DIR}/ninja-${NINJA_VERSION_PACKAGE}-windows.tgz --url https://h1grid.com:443/artifactory/cbt/devtools/ninja/${NINJA_VERSION_PACKAGE}/ninja-${NINJA_VERSION_PACKAGE}-windows.tgz
-    COMMAND ${python2_BIN} ${upload_py_COMMAND} --file ${SOURCE_UPLOAD_DIR}/ninja-${NINJA_VERSION_PACKAGE}-linux.tgz --url https://h1grid.com:443/artifactory/cbt/devtools/ninja/${NINJA_VERSION_PACKAGE}/ninja-${NINJA_VERSION_PACKAGE}-linux.tgz
-    COMMAND ${python2_BIN} ${upload_py_COMMAND} --file ${SOURCE_UPLOAD_DIR}/ninja-${NINJA_VERSION_PACKAGE}-osx.tgz --url https://h1grid.com:443/artifactory/cbt/devtools/ninja/${NINJA_VERSION_PACKAGE}/ninja-${NINJA_VERSION_PACKAGE}-osx.tgz
-    DEPENDS package_ninja
+add_custom_target(publish_package
+    COMMAND ${python2_BIN} ${upload_py_COMMAND} --file ${SOURCE_UPLOAD_DIR}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-{BUILD_OS}.tgz --url https://h1grid.com:443/artifactory/cbt/devtools/{PACKAGE_NAME}/${PACKAGE_VERSION_PACKAGE}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-{BUILD_OS}.tgz
+    DEPENDS package_tar
 )

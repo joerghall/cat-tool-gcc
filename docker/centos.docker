@@ -1,0 +1,18 @@
+FROM centos:7
+MAINTAINER Richard Cook <rcook@rcook.org>
+
+RUN yum -y update
+
+RUN yum -y install flex make bzip2 zip wget curl svn git texi2html texinfo  python python-libs python-devel gcc gcc-c++ swig perl-Data-Dumper
+
+RUN yum -y install gmp-devel mpfr-devel libmpc-devel glibc-devel.i686 libedit-devel libxml2 libxml2-devel ncurses-devel gmp-devel.i686 mpfr-devel.i686 libmpc-devel.i686 glibc-devel.i686
+
+RUN yum install -y http://www.rpmfind.net/linux/fedora/linux/releases/25/Everything/x86_64/os/Packages/b/bison-3.0.4-4.fc24.x86_64.rpm
+
+RUN wget -q https://cmake.org/files/v3.10/cmake-3.10.1-Linux-x86_64.sh\
+    && mkdir /cmake\
+    && sh ./cmake-3.10.1-Linux-x86_64.sh --skip-license --prefix=/cmake\
+    && ln -sf /cmake/bin/cmake /usr/bin/cmake\
+    && ln -sf /cmake/bin/ctest /usr/bin/ctest\
+    && ln -sf /cmake/bin/cpack /usr/bin/cpack\
+    && rm ./cmake-3.10.1-Linux-x86_64.sh
