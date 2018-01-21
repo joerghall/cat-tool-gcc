@@ -146,6 +146,6 @@ add_custom_target(package_tar
 )
 
 add_custom_target(publish_package
-    COMMAND ${python2_BIN} ${upload_py_COMMAND} --file ${SOURCE_UPLOAD_DIR}/${PACKAGE_NAME}{PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-${BUILD_OS}.tgz --url https://h1grid.com:443/artifactory/cbt/devtools/${PACKAGE_NAME}/${PACKAGE_VERSION_PACKAGE}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-${BUILD_OS}.tgz
+    COMMAND ${python2_BIN} ${upload_py_COMMAND} --file ${SOURCE_UPLOAD_DIR}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-${BUILD_OS}.tgz --url https://h1grid.com:443/artifactory/cbt/devtools/${PACKAGE_NAME}/${PACKAGE_VERSION_PACKAGE}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-${BUILD_OS}.tgz
     DEPENDS package_tar
 )
