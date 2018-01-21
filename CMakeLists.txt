@@ -129,8 +129,8 @@ add_custom_target(package_build
             --with-linker-hash-style=gnu
             --with-system-zlib
             --with-tune=generic
-    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j${N}  2>&1 | tee ${CMAKE_BINARY_DIR}/package_build.log | tail -c 80
-    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j${N} install  2>&1 | tee ${CMAKE_BINARY_DIR}/package_install.log | tail -c 80
+    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j${N}  2>&1 | tee ${CMAKE_BINARY_DIR}/package_build.log | grep -o '.{1,80}$'
+    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j${N} install  2>&1 | tee ${CMAKE_BINARY_DIR}/package_install.log | grep -o '.{1,80}$'
     WORKING_DIRECTORY ${SOURCE_DOWNLOAD_DIR}/${PACKAGE_NAME}
     DEPENDS download_contrib
 )
