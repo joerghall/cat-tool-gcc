@@ -46,6 +46,13 @@ project(cbt-devtool-gcc)
 
 enable_testing()
 
+include(ProcessorCount)
+ProcessorCount(N)
+message(STATUS "Processor count ${N}")
+if(N EQUAL 0)
+    set(N 4)
+endif()
+
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -122,8 +129,8 @@ add_custom_target(package_build
             --with-linker-hash-style=gnu
             --with-system-zlib
             --with-tune=generic
-    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j4  2>&1 | tee ${CMAKE_BINARY_DIR}/package_build.log | cut -c 80-160
-    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j4 install  2>&1 | tee ${CMAKE_BINARY_DIR}/package_install.log | cut -c -80
+    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j${N}  2>&1 | tee ${CMAKE_BINARY_DIR}/package_build.log | cut -c 80-160
+    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j${N} install  2>&1 | tee ${CMAKE_BINARY_DIR}/package_install.log | cut -c -80
     WORKING_DIRECTORY ${SOURCE_DOWNLOAD_DIR}/${PACKAGE_NAME}
     DEPENDS download_contrib
 )
