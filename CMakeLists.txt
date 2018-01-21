@@ -84,7 +84,7 @@ set(PACKAGE_INSTALL_DIR ${SOURCE_SRC_DIR}/${PACKAGE_NAME}/${PACKAGE_VERSION_PACK
 
 add_custom_target(download_source
     COMMAND ${CMAKE_COMMAND} -E make_directory ${SOURCE_DOWNLOAD_DIR}
-    COMMAND svn export --force svn://gcc.gnu.org/svn/gcc/tags/gcc_7_2_0_release ${SOURCE_DOWNLOAD_DIR}/gcc
+    COMMAND svn export -q --force svn://gcc.gnu.org/svn/gcc/tags/gcc_7_2_0_release ${SOURCE_DOWNLOAD_DIR}/gcc
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
