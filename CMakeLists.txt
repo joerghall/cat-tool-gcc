@@ -140,12 +140,12 @@ add_custom_target(package_build
 
 add_custom_target(package_tar
     COMMAND ${CMAKE_COMMAND} -E make_directory ${SOURCE_UPLOAD_DIR}
-    COMMAND ${CMAKE_COMMAND} -E tar czf ${SOURCE_UPLOAD_DIR}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-{BUILD_OS}.tgz ${PACKAGE_NAME}
+    COMMAND ${CMAKE_COMMAND} -E tar czf ${SOURCE_UPLOAD_DIR}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-${BUILD_OS}.tgz ${PACKAGE_NAME}
     WORKING_DIRECTORY ${SOURCE_SRC_DIR}
     DEPENDS package_build
 )
 
 add_custom_target(publish_package
-    COMMAND ${python2_BIN} ${upload_py_COMMAND} --file ${SOURCE_UPLOAD_DIR}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-{BUILD_OS}.tgz --url https://h1grid.com:443/artifactory/cbt/devtools/{PACKAGE_NAME}/${PACKAGE_VERSION_PACKAGE}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-{BUILD_OS}.tgz
+    COMMAND ${python2_BIN} ${upload_py_COMMAND} --file ${SOURCE_UPLOAD_DIR}/${PACKAGE_NAME}{PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-${BUILD_OS}.tgz --url https://h1grid.com:443/artifactory/cbt/devtools/${PACKAGE_NAME}/${PACKAGE_VERSION_PACKAGE}/${PACKAGE_NAME}-${PACKAGE_VERSION_PACKAGE}-${BUILD_OS}.tgz
     DEPENDS package_tar
 )
