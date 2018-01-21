@@ -122,8 +122,8 @@ add_custom_target(package_build
             --with-linker-hash-style=gnu
             --with-system-zlib
             --with-tune=generic
-    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j4
-    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j4 install
+    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j4 > ${CMAKE_BINARY_DIR}/package_build.log
+    COMMAND COMMAND ${CMAKE_COMMAND} -E env MAKEFLAGS= MAKEOVERRIDES= MAKELEVEL= MFLAGS= make -j4 install > ${CMAKE_BINARY_DIR}/package_install.log
     WORKING_DIRECTORY ${SOURCE_DOWNLOAD_DIR}/${PACKAGE_NAME}
     DEPENDS download_contrib
 )
