@@ -11,9 +11,9 @@ env:
     - apiuser=joerghall
 
 script:
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -v ${TRAVIS_BUILD_DIR}:/root/cbt-tool-ninja
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -v ${TRAVIS_BUILD_DIR}:/root/${TRAVIS_REPO_SLUG}
   -e apipwd -e apiuser -e TRAVIS_BRANCH --rm -t jhhj/cbt-gcc-centos7:1 /bin/bash
-  -c "mkdir /root/cbt-devtool-gcc/build && cd /root/cbt-tool-ninja/build && export PATH=/opt/rh/devtoolset-6/root/usr/bin:$PATH
+  -c "mkdir /root/${TRAVIS_REPO_SLUG}/build && cd /root/${TRAVIS_REPO_SLUG}/build && export PATH=/opt/rh/devtoolset-6/root/usr/bin:$PATH
   && cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . --target publish_package"
   ; fi
 
